@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import TokenBalance from "@/components/TokenBalance";
-import TokenSender from "@/components/TokenSender";
-import WalletCreator from "@/components/WalletCreator";
-import { useState } from "react";
-import type { Address } from "viem";
+import { useState } from 'react';
+import type { Address } from 'viem';
+import TokenBalance from '@/components/TokenBalance';
+import TokenSender from '@/components/TokenSender';
+import WalletCreator from '@/components/WalletCreator';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<Address | null>(null);
