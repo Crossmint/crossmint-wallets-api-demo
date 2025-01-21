@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Address } from 'viem';
+import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -9,14 +10,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { getBalanceOf } from '@/lib/token';
-import { useActiveWallet, useWallets } from '@/providers/WalletsProvider';
+import { useWallets } from '@/providers/WalletsProvider';
 import { fundWallet } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 export default function WalletsTable() {
   const { wallets } = useWallets();
-  const { activeWallet, setActiveWallet } = useActiveWallet();
   const { toast } = useToast();
   const [balances, setBalances] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<
@@ -74,17 +80,6 @@ export default function WalletsTable() {
     [fetchBalances, toast]
   );
 
-  const handleSetActiveWallet = useCallback(
-    (wallet: Address) => {
-      setActiveWallet(wallet);
-      toast({
-        title: 'Success',
-        description: 'Active wallet updated',
-      });
-    },
-    [setActiveWallet, toast]
-  );
-
   if (wallets.length === 0) {
     return <div>No wallets created yet</div>;
   }
@@ -96,7 +91,6 @@ export default function WalletsTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Address</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Balance</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -105,30 +99,26 @@ export default function WalletsTable() {
           {wallets.map((wallet) => (
             <TableRow key={wallet}>
               <TableCell className="font-mono">{wallet}</TableCell>
-              <TableCell>
-                {wallet === activeWallet ? (
-                  <span className="text-green-500">Active</span>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSetActiveWallet(wallet as Address)}>
-                    Set Active
-                  </Button>
-                )}
-              </TableCell>
               <TableCell>{balances[wallet] ?? 'Loading...'}</TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                   <Button
                     size="sm"
                     disabled={loading === 'funding'}
                     onClick={() => handleFundWallet(wallet as Address)}>
                     {loading === 'funding' ? 'Funding...' : 'Fund'}
                   </Button>
-                  <Button size="sm" variant="secondary">
-                    Transfer
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Transfer</DropdownMenuItem>
+                      <DropdownMenuItem>View Transactions</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </TableCell>
             </TableRow>
