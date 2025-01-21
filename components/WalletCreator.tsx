@@ -16,7 +16,7 @@ export default function WalletCreator() {
       const credentialName = 'xm-wallet';
       const credential = await createCredential(credentialName);
 
-      const { data: wallet } = await createWalletWithAuth({
+      const wallet = await createWalletWithAuth({
         type: 'evm-smart-wallet',
         config: {
           adminSigner: {

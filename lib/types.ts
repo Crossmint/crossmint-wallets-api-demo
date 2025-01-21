@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Address, Hash } from 'viem';
 
 export interface PasskeyPublicKey {
   x: string;
@@ -40,4 +40,8 @@ export interface FundPayload {
   amount: number;
   currency: string;
   chain: string;
+}
+
+export interface TxResponse {
+  txId: Hash;
 }
