@@ -5,10 +5,12 @@ import { useWallets } from '@/providers/WalletsProvider';
 import { createWalletWithAuth } from '@/lib/api';
 import { createCredential } from '@/lib/passkeys';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 export default function WalletCreator() {
   const [isCreating, setIsCreating] = useState(false);
   const { addWallet } = useWallets();
+  const { toast } = useToast();
 
   const handleCreateWallet = useCallback(async () => {
     setIsCreating(true);
@@ -31,13 +33,21 @@ export default function WalletCreator() {
         },
       });
       addWallet(wallet.address);
-      console.log({ wallet });
+      toast({
+        title: 'Success',
+        description: 'Wallet created successfully',
+      });
     } catch (error) {
       console.error('Error creating wallet:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create wallet. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
       setIsCreating(false);
     }
-  }, [addWallet]);
+  }, [addWallet, toast]);
 
   return (
     <div className="mb-6">

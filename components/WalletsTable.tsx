@@ -12,10 +12,12 @@ import {
 import { getBalanceOf } from '@/lib/token';
 import { useActiveWallet, useWallets } from '@/providers/WalletsProvider';
 import { fundWallet } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
 export default function WalletsTable() {
   const { wallets } = useWallets();
   const { activeWallet, setActiveWallet } = useActiveWallet();
+  const { toast } = useToast();
   const [balances, setBalances] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<
     undefined | 'funding' | 'transferring'
@@ -30,10 +32,15 @@ export default function WalletsTable() {
       } catch (error) {
         console.error(`Error fetching balance for ${wallet}:`, error);
         newBalances[wallet] = 'Error';
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch balance. Please try again.',
+          variant: 'destructive',
+        });
       }
     }
     setBalances(newBalances);
-  }, [wallets]);
+  }, [wallets, toast]);
 
   useEffect(() => {
     fetchBalances();
@@ -49,13 +56,33 @@ export default function WalletsTable() {
           currency: 'usdxm',
         });
         await fetchBalances();
+        toast({
+          title: 'Success',
+          description: 'Wallet funded successfully',
+        });
       } catch (error) {
         console.error('Error funding wallet:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fund wallet. Please try again.',
+          variant: 'destructive',
+        });
       } finally {
         setLoading(undefined);
       }
     },
-    [fetchBalances]
+    [fetchBalances, toast]
+  );
+
+  const handleSetActiveWallet = useCallback(
+    (wallet: Address) => {
+      setActiveWallet(wallet);
+      toast({
+        title: 'Success',
+        description: 'Active wallet updated',
+      });
+    },
+    [setActiveWallet, toast]
   );
 
   if (wallets.length === 0) {
@@ -85,7 +112,7 @@ export default function WalletsTable() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setActiveWallet(wallet as Address)}>
+                    onClick={() => handleSetActiveWallet(wallet as Address)}>
                     Set Active
                   </Button>
                 )}
