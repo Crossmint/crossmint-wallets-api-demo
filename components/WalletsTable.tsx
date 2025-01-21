@@ -67,7 +67,7 @@ export default function WalletsTable() {
                   </Button>
                 )}
               </TableCell>
-              <TableCell>{balances[wallet] ?? 'Loading...'} tokens</TableCell>
+              <TableCell>{balances[wallet] ?? 'Loading...'}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm">Fund</Button>

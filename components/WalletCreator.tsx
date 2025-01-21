@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useWallets } from '@/providers/WalletsProvider';
 import { createWalletWithAuth } from '@/lib/api';
 import { createCredential } from '@/lib/passkeys';
+import { Button } from '@/components/ui/button';
 
 export default function WalletCreator() {
   const [isCreating, setIsCreating] = useState(false);
@@ -40,13 +41,9 @@ export default function WalletCreator() {
 
   return (
     <div className="mb-6">
-      <button
-        type="button"
-        onClick={handleCreateWallet}
-        disabled={isCreating}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50">
+      <Button onClick={handleCreateWallet} disabled={isCreating}>
         {isCreating ? 'Creating...' : 'Create New Wallet'}
-      </button>
+      </Button>
     </div>
   );
 }
