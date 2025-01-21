@@ -28,30 +28,64 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useWallets } from '@/providers/WalletsProvider';
+import { useCallback, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { getTransferTransaction } from '@/lib/token';
+import type { Address } from 'viem';
 
 interface WalletTransferDialogProps {
   walletLocator: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 export function WalletTransferDialog({
   walletLocator,
   open,
   onOpenChange,
+  onSuccess,
 }: WalletTransferDialogProps) {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [recipient, setRecipient] = useState<Address | ''>('');
+  const [amount, setAmount] = useState('');
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const { wallets } = useWallets();
+  const { toast } = useToast();
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!recipient || !amount) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
-    // Transfer logic will go here
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    onOpenChange(false);
-  };
+    try {
+      const transferData = await getTransferTransaction(recipient, amount);
+      console.log({transferData});
+      setIsLoading(false);
+      onOpenChange(false);
+      onSuccess();
+      toast({
+        title: 'Success',
+        description: 'Funds transferred successfully',
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: 'Failed to transfer funds',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [recipient, amount, onSuccess, onOpenChange, toast]);
 
   const TransferForm = ({ className }: React.ComponentProps<'form'>) => {
     return (
@@ -59,8 +93,10 @@ export function WalletTransferDialog({
         onSubmit={onSubmit}
         className={cn('grid items-start gap-4', className)}>
         <div className="grid gap-2">
-          <Label htmlFor="wallet">Select Wallet</Label>
-          <Select>
+          <Label htmlFor="recipient">Select Wallet</Label>
+          <Select
+            value={recipient}
+            onValueChange={(value) => setRecipient(value as Address)}>
             <SelectTrigger>
               <SelectValue placeholder="Select a wallet" />
             </SelectTrigger>
@@ -78,6 +114,8 @@ export function WalletTransferDialog({
           <Input
             id="amount"
             type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
             step="0.000001"
             min="0"

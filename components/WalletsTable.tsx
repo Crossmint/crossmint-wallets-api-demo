@@ -163,6 +163,10 @@ export default function WalletsTable() {
           walletLocator={selectedWallet}
           open={true}
           onOpenChange={(open) => !open && handleCloseDialog()}
+          onSuccess={() => {
+            fetchBalances();
+            handleCloseDialog();
+          }}
         />
       )}
     </div>
