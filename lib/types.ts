@@ -1,4 +1,4 @@
-import { type Address } from 'viem';
+import type { Address } from 'viem';
 
 export interface PasskeyPublicKey {
   x: string;
@@ -34,4 +34,10 @@ export interface Wallet {
   linkedUser?: string;
   address: Address;
   config: WalletConfig;
+}
+
+export interface FundPayload {
+  amount: number;
+  currency: string;
+  chain: string;
 }
