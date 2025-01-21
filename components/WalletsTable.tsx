@@ -20,6 +20,8 @@ import { getBalanceOf } from '@/lib/token';
 import { useWallets } from '@/providers/WalletsProvider';
 import { fundWallet } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { WalletTransactionsDialog } from './WalletTransactionsDialog';
+import { WalletTransferDialog } from './WalletTransferDialog';
 
 export default function WalletsTable() {
   const { wallets } = useWallets();
@@ -28,6 +30,15 @@ export default function WalletsTable() {
   const [loading, setLoading] = useState<
     undefined | 'funding' | 'transferring'
   >(undefined);
+  const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState<
+    'transfer' | 'transactions' | null
+  >(null);
+
+  const handleCloseDialog = useCallback(() => {
+    setDialogOpen(null);
+    setSelectedWallet(null);
+  }, []);
 
   const fetchBalances = useCallback(async () => {
     const newBalances: Record<string, string> = {};
@@ -92,6 +103,7 @@ export default function WalletsTable() {
           <TableRow>
             <TableHead>Address</TableHead>
             <TableHead>Balance</TableHead>
+            <TableHead>Fund</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -101,30 +113,58 @@ export default function WalletsTable() {
               <TableCell className="font-mono">{wallet}</TableCell>
               <TableCell>{balances[wallet] ?? 'Loading...'}</TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    disabled={loading === 'funding'}
-                    onClick={() => handleFundWallet(wallet as Address)}>
-                    {loading === 'funding' ? 'Funding...' : 'Fund'}
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Transfer</DropdownMenuItem>
-                      <DropdownMenuItem>View Transactions</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                <Button
+                  size="sm"
+                  disabled={loading === 'funding'}
+                  onClick={() => handleFundWallet(wallet as Address)}>
+                  {loading === 'funding' ? 'Funding...' : 'Fund'}
+                </Button>
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setSelectedWallet(wallet);
+                        setDialogOpen('transfer');
+                      }}>
+                      Transfer
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setSelectedWallet(wallet);
+                        setDialogOpen('transactions');
+                      }}>
+                      View Transactions
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {selectedWallet && dialogOpen === 'transactions' && (
+        <WalletTransactionsDialog 
+          walletLocator={selectedWallet}
+          open={true}
+          onOpenChange={(open) => !open && handleCloseDialog()}
+        />
+      )}
+
+      {selectedWallet && dialogOpen === 'transfer' && (
+        <WalletTransferDialog 
+          walletLocator={selectedWallet}
+          open={true}
+          onOpenChange={(open) => !open && handleCloseDialog()}
+        />
+      )}
     </div>
   );
 }
