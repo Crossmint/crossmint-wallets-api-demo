@@ -22,7 +22,7 @@ export async function POST(
         success: false,
         message: 'Funding wallet failed',
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

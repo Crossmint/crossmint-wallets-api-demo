@@ -1,6 +1,9 @@
 import ky from 'ky';
 import type {
   FundPayload,
+  Transaction,
+  TxApprovalRequest,
+  TxRequest,
   TxResponse,
   Wallet,
   WalletPayload,
@@ -41,6 +44,36 @@ export const fundWallet = (walletLocator: string, payload: FundPayload) =>
   ky
     .post<TxResponse>(
       `${API_ALPHA_V2_BASE_URL}wallets/${walletLocator}/balances`,
+      {
+        headers: { 'X-API-KEY': WALLETS_API_KEY },
+        json: payload,
+      }
+    )
+    .json();
+
+export const getTransactions = (walletLocator: string) =>
+  ky
+    .get<Transaction[]>(`${BASE_URL}wallets/${walletLocator}/transactions`, {
+      headers: { 'X-API-KEY': WALLETS_API_KEY },
+    })
+    .json();
+
+export const createTransaction = (walletLocator: string, payload: TxRequest) =>
+  ky
+    .post<Transaction>(`${BASE_URL}wallets/${walletLocator}/transactions`, {
+      headers: { 'X-API-KEY': WALLETS_API_KEY },
+      json: payload,
+    })
+    .json();
+
+export const approveTransaction = (
+  walletLocator: string,
+  txId: string,
+  payload: TxApprovalRequest
+) =>
+  ky
+    .post<Transaction>(
+      `${BASE_URL}wallets/${walletLocator}/transactions/${txId}/approvals`,
       {
         headers: { 'X-API-KEY': WALLETS_API_KEY },
         json: payload,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +18,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { getTransactions } from '@/lib/api';
 
 interface WalletTransactionsDialogProps {
   walletLocator: string;
@@ -30,6 +32,14 @@ export function WalletTransactionsDialog({
   onOpenChange,
 }: WalletTransactionsDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const transactions = await getTransactions(walletLocator);
+      console.log({ transactions });
+    };
+    fetchTransactions();
+  }, [walletLocator]);
 
   if (isDesktop) {
     return (

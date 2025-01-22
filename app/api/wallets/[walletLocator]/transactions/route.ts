@@ -1,22 +1,54 @@
 import { NextResponse } from 'next/server';
+import { createTransaction, getTransactions } from '@/lib/server';
+import type { TxRequest } from '@/lib/types';
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ walletLocator: string }> }
+) {
   try {
-    const { encodedPayload, signer } = await request.json();
+    const walletLocator = (await params).walletLocator;
+    const txRequest: TxRequest = await request.json();
 
-    // TODO: Implement transaction signing and transfer logic
+    const txIntent = await createTransaction(walletLocator, txRequest);
 
     return NextResponse.json({
       success: true,
-      message: 'Transfer initiated',
+      data: txIntent,
     });
   } catch (error) {
+    console.error('Creating transaction failed:', error);
     return NextResponse.json(
       {
         success: false,
-        message: 'Transfer failed',
+        message: 'Creating transaction failed',
       },
-      { status: 400 }
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET({
+  params,
+}: {
+  params: Promise<{ walletLocator: string }>;
+}) {
+  try {
+    const walletLocator = (await params).walletLocator;
+    const transactions = await getTransactions(walletLocator);
+
+    return NextResponse.json({
+      success: true,
+      data: transactions,
+    });
+  } catch (error) {
+    console.error('Getting transactions failed:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Getting transactions failed',
+      },
+      { status: 500 }
     );
   }
 }

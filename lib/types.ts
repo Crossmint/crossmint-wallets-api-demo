@@ -1,4 +1,5 @@
-import type { Address, Hash } from 'viem';
+import type { SignMetadata } from 'ox/WebAuthnP256';
+import type { Address, Hash, Hex } from 'viem';
 
 export interface PasskeyPublicKey {
   x: string;
@@ -44,4 +45,46 @@ export interface FundPayload {
 
 export interface TxResponse {
   txId: Hash;
+}
+
+export interface TxRequest {
+  params: {
+    calls: {
+      data: Hex;
+      to: Address;
+      value: string;
+    }[];
+    chain: string;
+    signer: string;
+  };
+}
+
+export interface TxApproval {
+  metadata: SignMetadata;
+  signature: {
+    r: string;
+    s: string;
+  };
+  signer: string;
+}
+export interface TxApprovalRequest {
+  approvals: TxApproval[];
+}
+
+export interface Transaction {
+  id: string;
+  status: 'awaiting-approval' | 'pending' | 'completed' | 'failed';
+  approvals: {
+    pending: {
+      signer: string;
+      message: Hex;
+    }[];
+    submitted: {
+      signer: string;
+      message: Hex;
+    }[];
+  };
+  onChain: {
+    userOperationHash: Hex;
+  };
 }

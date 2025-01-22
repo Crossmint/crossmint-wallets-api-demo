@@ -1,12 +1,18 @@
 'use client';
 
-import { type ReactNode, createContext, useContext, useState, useCallback, useEffect } from 'react';
+import {
+  type ReactNode,
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
 import type { Address } from 'viem';
+import type { P256Credential } from 'ox/WebAuthnP256';
 import { createCredential } from '../lib/passkeys';
 import { useToast } from '@/hooks/use-toast';
 import { createWalletWithAuth } from '@/lib/api';
-import type { P256Credential } from 'ox/WebAuthnP256';
-
 
 interface WalletsContextType {
   wallets: Address[];
@@ -58,7 +64,10 @@ export function WalletsProvider({ children }: { children: ReactNode }) {
       if (!userCredential) {
         userCredential = await createCredential(credentialName);
         setCredential(userCredential);
-        localStorage.setItem(STORAGE_KEYS.CREDENTIAL, JSON.stringify(userCredential));
+        localStorage.setItem(
+          STORAGE_KEYS.CREDENTIAL,
+          JSON.stringify(userCredential)
+        );
       }
 
       const wallet = await createWalletWithAuth({
@@ -75,6 +84,7 @@ export function WalletsProvider({ children }: { children: ReactNode }) {
           },
         },
       });
+      console.log({ wallet });
       addWallet(wallet.address);
       toast({
         title: 'Success',

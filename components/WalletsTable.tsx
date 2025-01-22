@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Address } from 'viem';
 import { MoreHorizontal } from 'lucide-react';
+import { WalletTransactionsDialog } from './WalletTransactionsDialog';
+import { WalletTransferDialog } from './WalletTransferDialog';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -20,8 +22,6 @@ import { getBalanceOf } from '@/lib/token';
 import { useWallets } from '@/providers/WalletsProvider';
 import { fundWallet } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { WalletTransactionsDialog } from './WalletTransactionsDialog';
-import { WalletTransferDialog } from './WalletTransferDialog';
 
 export default function WalletsTable() {
   const { wallets } = useWallets();
@@ -128,7 +128,7 @@ export default function WalletsTable() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => {
                         setSelectedWallet(wallet);
                         setDialogOpen('transfer');
@@ -151,7 +151,7 @@ export default function WalletsTable() {
       </Table>
 
       {selectedWallet && dialogOpen === 'transactions' && (
-        <WalletTransactionsDialog 
+        <WalletTransactionsDialog
           walletLocator={selectedWallet}
           open={true}
           onOpenChange={(open) => !open && handleCloseDialog()}
@@ -159,7 +159,7 @@ export default function WalletsTable() {
       )}
 
       {selectedWallet && dialogOpen === 'transfer' && (
-        <WalletTransferDialog 
+        <WalletTransferDialog
           walletLocator={selectedWallet}
           open={true}
           onOpenChange={(open) => !open && handleCloseDialog()}

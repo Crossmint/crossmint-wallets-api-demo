@@ -1,6 +1,9 @@
 import ky from 'ky';
 import type {
   FundPayload,
+  Transaction,
+  TxApprovalRequest,
+  TxRequest,
   TxResponse,
   Wallet,
   WalletPayload,
@@ -34,5 +37,60 @@ export async function fundWallet(walletLocator: string, payload: FundPayload) {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {
     throw new Error(error.message || 'Failed to fund wallet');
+  }
+}
+
+export async function getTransactions(walletLocator: string) {
+  try {
+    const { data: txResponse } = await ky
+      .get<{
+        data: Transaction[];
+      }>(`/api/wallets/${walletLocator}/transactions`)
+      .json();
+    return txResponse;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to get transactions');
+  }
+}
+
+export async function createTransaction(
+  walletLocator: string,
+  payload: TxRequest
+) {
+  try {
+    const { data: txResponse } = await ky
+      .post<{ data: Transaction }>(
+        `/api/wallets/${walletLocator}/transactions`,
+        {
+          json: payload,
+        }
+      )
+      .json();
+    return txResponse;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to create transaction');
+  }
+}
+
+export async function approveTransaction(
+  walletLocator: string,
+  txId: string,
+  payload: TxApprovalRequest
+) {
+  try {
+    const { data: approvalResponse } = await ky
+      .post<{ data: Transaction }>(
+        `/api/wallets/${walletLocator}/transactions/${txId}/approvals`,
+        {
+          json: payload,
+        }
+      )
+      .json();
+    return approvalResponse;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to approve transaction');
   }
 }

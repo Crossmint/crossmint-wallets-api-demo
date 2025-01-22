@@ -18,7 +18,7 @@ export async function POST(request: Request) {
         success: false,
         message: 'Wallet creation failed',
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
