@@ -64,11 +64,10 @@ export function WalletsProvider({ children }: { children: ReactNode }) {
       if (!userCredential) {
         userCredential = await createCredential(credentialName);
         setCredential(userCredential);
-        // Convert any bigint properties to strings before storing
+        // Create a plain object with only the necessary properties
         const credentialToStore = {
-          ...userCredential,
+          id: userCredential.id,
           publicKey: {
-            ...userCredential.publicKey,
             x: userCredential.publicKey.x.toString(),
             y: userCredential.publicKey.y.toString(),
           },
