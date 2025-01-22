@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Crossmint Wallets API Demo
+
+This is a demonstration project showcasing the integration of Crossmint's Wallets API with passkey authentication. This demo is for educational purposes and **should not be used in production without proper security measures**.
+
+## ⚠️ Important Security Notes
+
+- This is a demo application and is not production-ready
+- Never expose your Crossmint server API key on the client side
+- All Crossmint API calls should be wrapped through your backend endpoints
+- Proper error handling and security measures should be implemented for production use
+
+## Features
+
+### 1. Wallet Creation with Passkeys
+
+- Create multiple wallets using a single passkey
+- Each wallet is associated with a unique passkey credential
+- Utilizes the [Create Wallet API](https://docs.crossmint.com/api-reference/wallets/create-wallet)
+- Passkeys and wallet addresses persist in localStorage
+
+### 2. Wallet Funding
+
+- Fund wallets using test tokens
+- Implements the [Fund Wallet API](https://docs.crossmint.com/api-reference/wallets/fund-wallet)
+- Supports various tokens and chains (demo uses USDXM on Base Sepolia)
+
+### 3. Transaction Management
+
+- View all wallet transactions
+- Create new token transfer transactions
+- Uses [Get Transactions API](https://docs.crossmint.com/api-reference/wallets/get-transaction)
+- Implements [Create Transaction API](https://docs.crossmint.com/api-reference/wallets/create-transaction)
+- Supports [Transaction Approval API](https://docs.crossmint.com/api-reference/wallets/approve-transaction)
+
+## Transaction Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Crossmint
+    participant Blockchain
+
+    User->>Frontend: Initiates Transfer
+    Frontend->>Frontend: Creates Transaction with Viem
+    Frontend->>Backend: Sends Transaction + Passkey
+    Backend->>Crossmint: Creates Transaction
+    Crossmint-->>Backend: Returns Signature Request
+    Backend-->>Frontend: Returns Signature Request
+    Frontend->>Frontend: Signs with Passkey
+    Frontend->>Backend: Sends Signature + Metadata
+    Backend->>Crossmint: Approves Transaction
+    Crossmint->>Blockchain: Executes Transaction
+    Blockchain-->>Crossmint: Confirms Transaction
+    Crossmint-->>Backend: Returns Status
+    Backend-->>Frontend: Updates UI
+    Frontend-->>User: Shows Success
+```
+
+## Technical Details
+
+### Passkeys
+
+- Uses [WebAuthn](https://oxlib.sh/guides/webauthn) for secure key generation and signing
+- Credentials are stored locally in the browser
+- Each passkey can manage multiple wallets
+- No server-side storage of private keys
+
+### Token Transactions
+
+- Uses [Viem](https://viem.sh/) for transaction creation and RPC interactions
+- **Note**: You must provide your own RPC provider for production use
+- Supports ERC20 token transfers (demo uses USDXM)
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Create a `.env.local` file with the following variables:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```env
+API_BASE_URL=https://api.crossmint.com/api/v1-alpha1/
+API_ALPHA_V2_BASE_URL=https://api.crossmint.com/api/v1-alpha2/
+WALLETS_API_KEY=your_api_key_here
+NEXT_PUBLIC_RPC_URL=your_rpc_url_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/app` - Next.js app router pages and API routes
+- `/components` - React components for UI
+- `/lib` - Utility functions and API wrappers
+- `/providers` - React context providers
+- `/hooks` - Custom React hooks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Dependencies
 
-## Deploy on Vercel
+- Next.js 14
+- React 18
+- Viem for Ethereum interactions
+- Shadcn/ui for UI components
+- WebAuthn for passkey management
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security Considerations for Production
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Implement proper authentication and authorization
+2. Secure API key management
+3. Rate limiting and request validation
+4. Error handling and logging
+5. Secure session management
+6. Input validation and sanitization
+7. CORS configuration
+8. SSL/TLS encryption
