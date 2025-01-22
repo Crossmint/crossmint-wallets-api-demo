@@ -64,9 +64,18 @@ export function WalletsProvider({ children }: { children: ReactNode }) {
       if (!userCredential) {
         userCredential = await createCredential(credentialName);
         setCredential(userCredential);
+        // Convert any bigint properties to strings before storing
+        const credentialToStore = {
+          ...userCredential,
+          publicKey: {
+            ...userCredential.publicKey,
+            x: userCredential.publicKey.x.toString(),
+            y: userCredential.publicKey.y.toString(),
+          },
+        };
         localStorage.setItem(
           STORAGE_KEYS.CREDENTIAL,
-          JSON.stringify(userCredential)
+          JSON.stringify(credentialToStore)
         );
       }
 
