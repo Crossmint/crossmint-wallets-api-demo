@@ -44,7 +44,7 @@ export async function getTransactions(walletLocator: string) {
   try {
     const { data: txResponse } = await ky
       .get<{
-        data: Transaction[];
+        data: { transactions: Transaction[] };
       }>(`/api/wallets/${walletLocator}/transactions`)
       .json();
     return txResponse;

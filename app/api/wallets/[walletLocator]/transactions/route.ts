@@ -28,11 +28,14 @@ export async function POST(
   }
 }
 
-export async function GET({
-  params,
-}: {
-  params: Promise<{ walletLocator: string }>;
-}) {
+export async function GET(
+  request: Request,
+  {
+    params,
+  }: {
+    params: Promise<{ walletLocator: string }>;
+  }
+) {
   try {
     const walletLocator = (await params).walletLocator;
     const transactions = await getTransactions(walletLocator);

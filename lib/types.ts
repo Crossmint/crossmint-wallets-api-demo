@@ -73,7 +73,7 @@ export interface TxApprovalRequest {
 
 export interface Transaction {
   id: string;
-  status: 'awaiting-approval' | 'pending' | 'completed' | 'failed';
+  status: 'awaiting-approval' | 'pending' | 'success' | 'failed';
   approvals: {
     pending: {
       signer: string;
@@ -85,6 +85,8 @@ export interface Transaction {
     }[];
   };
   onChain: {
+    txId?: Hash;
+    explorerLink?: string;
     userOperationHash: Hex;
   };
 }
