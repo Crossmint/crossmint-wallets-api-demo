@@ -12,14 +12,6 @@ export async function POST(
     const { walletLocator, transactionId } = await params;
     const approvalRequest: TxApprovalRequest = await request.json();
 
-    approvalRequest.approvals = approvalRequest.approvals.map((approval) => ({
-      ...approval,
-      metadata: {
-        ...approval.metadata,
-        clientDataJSON: JSON.parse(approval.metadata.clientDataJSON),
-      },
-    }));
-
     const approvalResponse = await approveTransaction(
       walletLocator,
       transactionId,
