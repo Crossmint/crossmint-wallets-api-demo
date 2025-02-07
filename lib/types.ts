@@ -39,7 +39,7 @@ export interface Wallet {
 
 export interface FundPayload {
   amount: number;
-  currency: string;
+  token: string;
   chain: string;
 }
 

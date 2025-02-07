@@ -70,7 +70,7 @@ export default function WalletsTable() {
         await fundWallet(wallet, {
           amount: 10,
           chain: 'base-sepolia',
-          currency: 'usdxm',
+          token: 'usdxm',
         });
         await fetchBalances();
         toast({
