@@ -90,3 +90,26 @@ export interface Transaction {
     userOperationHash: Hex;
   };
 }
+
+export interface DelegatedSignerPayload {
+  signer: {
+    type: 'evm-passkey';
+    id: string;
+    name: string;
+    publicKey: {
+      x: string;
+      y: string;
+    };
+  };
+  chain: string;
+}
+
+export interface DelegatedSigner {
+  id: string;
+  name: string;
+  publicKey: {
+    x: string;
+    y: string;
+  };
+  chain: string;
+}

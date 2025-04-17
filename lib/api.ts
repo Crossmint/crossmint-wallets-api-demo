@@ -1,5 +1,7 @@
 import ky from 'ky';
 import type {
+  DelegatedSigner,
+  DelegatedSignerPayload,
   FundPayload,
   Transaction,
   TxApprovalRequest,
@@ -92,5 +94,25 @@ export async function approveTransaction(
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   } catch (error: any) {
     throw new Error(error.message || 'Failed to approve transaction');
+  }
+}
+
+export async function registerDelegatedSigner(
+  walletLocator: string,
+  payload: DelegatedSignerPayload
+) {
+  try {
+    const { data: delegatedSigner } = await ky
+      .post<{ data: DelegatedSigner }>(
+        `/api/wallets/${walletLocator}/signers`,
+        {
+          json: payload,
+        }
+      )
+      .json();
+    return delegatedSigner;
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to register delegated signer');
   }
 }
