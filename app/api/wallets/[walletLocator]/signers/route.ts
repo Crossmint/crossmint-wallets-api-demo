@@ -10,14 +10,14 @@ export async function POST(
     const walletLocator = (await params).walletLocator;
     const delegatedSignerPayload: DelegatedSignerPayload = await request.json();
 
-    const delegatedSigner = await registerDelegatedSigner(
+    const delegatedSignerTransaction = await registerDelegatedSigner(
       walletLocator,
       delegatedSignerPayload
     );
 
     return NextResponse.json({
       success: true,
-      data: delegatedSigner,
+      data: delegatedSignerTransaction,
     });
   } catch (error) {
     console.error('Registering delegated signer failed:', error);

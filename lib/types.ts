@@ -104,6 +104,27 @@ export interface DelegatedSignerPayload {
   chain: string;
 }
 
+export interface DelegatedSignerTransaction {
+  type: 'evm-passkey' | 'evm-keypair';
+  locator: string;
+  chains: {
+    [chain: string]: {
+      status: 'awaiting-approval' | 'pending' | 'success' | 'failed';
+      id: string;
+      approvals: {
+        pending: {
+          signer: string;
+          message: Hex;
+        }[];
+        submitted: {
+          signer: string;
+          message: Hex;
+        }[];
+      };
+    };
+  };
+}
+
 export interface DelegatedSigner {
   id: string;
   name: string;

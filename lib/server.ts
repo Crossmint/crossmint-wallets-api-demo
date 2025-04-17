@@ -1,6 +1,6 @@
 import ky from 'ky';
 import type {
-  DelegatedSigner,
+  DelegatedSignerTransaction,
   DelegatedSignerPayload,
   FundPayload,
   Transaction,
@@ -66,12 +66,29 @@ export const approveTransaction = (
     )
     .json();
 
+export const approveSignature = (
+  walletLocator: string,
+  signatureId: string,
+  payload: TxApprovalRequest
+) =>
+  apiClient
+    .post<Transaction>(
+      `2022-06-09/wallets/${walletLocator}/signatures/${signatureId}/approvals`,
+      {
+        json: payload,
+      }
+    )
+    .json();
+
 export const registerDelegatedSigner = (
   walletLocator: string,
   payload: DelegatedSignerPayload
 ) =>
   apiClient
-    .post<DelegatedSigner>(`2022-06-09/wallets/${walletLocator}/signers`, {
-      json: payload,
-    })
+    .post<DelegatedSignerTransaction>(
+      `2022-06-09/wallets/${walletLocator}/signers`,
+      {
+        json: payload,
+      }
+    )
     .json();
