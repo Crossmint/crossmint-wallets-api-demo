@@ -3,6 +3,7 @@ import type { Address } from 'viem';
 import { MoreHorizontal } from 'lucide-react';
 import { WalletTransactionsDialog } from './WalletTransactionsDialog';
 import { WalletTransferDialog } from './WalletTransferDialog';
+import { WalletRegisterSignerDialog } from './WalletRegisterSignerDialog';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -32,7 +33,7 @@ export default function WalletsTable() {
   >(undefined);
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<
-    'transfer' | 'transactions' | null
+    'transfer' | 'transactions' | 'register-signer' | null
   >(null);
 
   const handleCloseDialog = useCallback(() => {
@@ -142,6 +143,13 @@ export default function WalletsTable() {
                       }}>
                       View Transactions
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setSelectedWallet(wallet);
+                        setDialogOpen('register-signer');
+                      }}>
+                      Register Delegated Signer
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -167,6 +175,15 @@ export default function WalletsTable() {
             fetchBalances();
             handleCloseDialog();
           }}
+        />
+      )}
+
+      {selectedWallet && dialogOpen === 'register-signer' && (
+        <WalletRegisterSignerDialog
+          walletLocator={selectedWallet}
+          open={true}
+          onOpenChange={(open) => !open && handleCloseDialog()}
+          onSuccess={handleCloseDialog}
         />
       )}
     </div>

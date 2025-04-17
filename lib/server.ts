@@ -1,5 +1,7 @@
 import ky from 'ky';
 import type {
+  DelegatedSignerTransaction,
+  DelegatedSignerPayload,
   FundPayload,
   Transaction,
   TxApprovalRequest,
@@ -10,7 +12,6 @@ import type {
 } from '@/lib/types';
 
 const BASE_URL = process.env.API_BASE_URL;
-const API_ALPHA_V2_BASE_URL = process.env.API_ALPHA_V2_BASE_URL;
 const WALLETS_API_KEY = process.env.WALLETS_API_KEY;
 
 if (!BASE_URL) {
@@ -21,47 +22,32 @@ if (!WALLETS_API_KEY) {
   throw new Error('API_KEY is not set');
 }
 
-if (!API_ALPHA_V2_BASE_URL) {
-  throw new Error('API_ALPHA_V2_BASE_URL is not set');
-}
+const apiClient = ky.create({
+  prefixUrl: BASE_URL,
+  headers: { 'X-API-KEY': WALLETS_API_KEY },
+});
 
 export const createWallet = (payload: WalletPayload) =>
-  ky
-    .post<Wallet>(`${BASE_URL}wallets`, {
-      headers: { 'X-API-KEY': WALLETS_API_KEY },
+  apiClient.post<Wallet>('2022-06-09/wallets', { json: payload }).json();
+
+export const getWallet = (walletLocator: string) =>
+  apiClient.get<Wallet>(`2022-06-09/wallets/${walletLocator}`).json();
+
+export const fundWallet = (walletLocator: string, payload: FundPayload) =>
+  apiClient
+    .post<TxResponse>(`v1-alpha2/wallets/${walletLocator}/balances`, {
       json: payload,
     })
     .json();
 
-export const getWallet = (walletLocator: string) =>
-  ky
-    .get<Wallet>(`${BASE_URL}wallets/${walletLocator}`, {
-      headers: { 'X-API-KEY': WALLETS_API_KEY },
-    })
-    .json();
-
-export const fundWallet = (walletLocator: string, payload: FundPayload) =>
-  ky
-    .post<TxResponse>(
-      `${API_ALPHA_V2_BASE_URL}wallets/${walletLocator}/balances`,
-      {
-        headers: { 'X-API-KEY': WALLETS_API_KEY },
-        json: payload,
-      }
-    )
-    .json();
-
 export const getTransactions = (walletLocator: string) =>
-  ky
-    .get<Transaction[]>(`${BASE_URL}wallets/${walletLocator}/transactions`, {
-      headers: { 'X-API-KEY': WALLETS_API_KEY },
-    })
+  apiClient
+    .get<Transaction[]>(`2022-06-09/wallets/${walletLocator}/transactions`)
     .json();
 
 export const createTransaction = (walletLocator: string, payload: TxRequest) =>
-  ky
-    .post<Transaction>(`${BASE_URL}wallets/${walletLocator}/transactions`, {
-      headers: { 'X-API-KEY': WALLETS_API_KEY },
+  apiClient
+    .post<Transaction>(`2022-06-09/wallets/${walletLocator}/transactions`, {
       json: payload,
     })
     .json();
@@ -71,11 +57,37 @@ export const approveTransaction = (
   txId: string,
   payload: TxApprovalRequest
 ) =>
-  ky
+  apiClient
     .post<Transaction>(
-      `${BASE_URL}wallets/${walletLocator}/transactions/${txId}/approvals`,
+      `2022-06-09/wallets/${walletLocator}/transactions/${txId}/approvals`,
       {
-        headers: { 'X-API-KEY': WALLETS_API_KEY },
+        json: payload,
+      }
+    )
+    .json();
+
+export const approveSignature = (
+  walletLocator: string,
+  signatureId: string,
+  payload: TxApprovalRequest
+) =>
+  apiClient
+    .post<Transaction>(
+      `2022-06-09/wallets/${walletLocator}/signatures/${signatureId}/approvals`,
+      {
+        json: payload,
+      }
+    )
+    .json();
+
+export const registerDelegatedSigner = (
+  walletLocator: string,
+  payload: DelegatedSignerPayload
+) =>
+  apiClient
+    .post<DelegatedSignerTransaction>(
+      `2022-06-09/wallets/${walletLocator}/signers`,
+      {
         json: payload,
       }
     )

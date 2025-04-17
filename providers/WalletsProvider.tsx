@@ -10,7 +10,7 @@ import {
 } from 'react';
 import type { Address } from 'viem';
 import type { P256Credential } from 'ox/WebAuthnP256';
-import { createCredential } from '../lib/passkeys';
+import { createCredential } from '@/lib/passkeys';
 import { useToast } from '@/hooks/use-toast';
 import { createWalletWithAuth } from '@/lib/api';
 

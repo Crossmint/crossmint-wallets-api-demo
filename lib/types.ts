@@ -90,3 +90,47 @@ export interface Transaction {
     userOperationHash: Hex;
   };
 }
+
+export interface DelegatedSignerPayload {
+  signer: {
+    type: 'evm-passkey';
+    id: string;
+    name: string;
+    publicKey: {
+      x: string;
+      y: string;
+    };
+  };
+  chain: string;
+}
+
+export interface DelegatedSignerTransaction {
+  type: 'evm-passkey' | 'evm-keypair';
+  locator: string;
+  chains: {
+    [chain: string]: {
+      status: 'awaiting-approval' | 'pending' | 'success' | 'failed';
+      id: string;
+      approvals: {
+        pending: {
+          signer: string;
+          message: Hex;
+        }[];
+        submitted: {
+          signer: string;
+          message: Hex;
+        }[];
+      };
+    };
+  };
+}
+
+export interface DelegatedSigner {
+  id: string;
+  name: string;
+  publicKey: {
+    x: string;
+    y: string;
+  };
+  chain: string;
+}

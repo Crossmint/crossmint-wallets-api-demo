@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Crossmint Wallets API Demo',
-  description: 'Demo application for the Crossmint Wallets API',
+  title: 'Crossmint Wallets Server API Demo',
+  description: 'Demo application for Crossmint Wallets Server API',
 };
 
 export default function RootLayout({
